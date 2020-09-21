@@ -108,4 +108,14 @@ router.get("/", auth, async (req, res) => {
   });
 });
 
+router.get(`/sync`, (req, res) => {
+  User.find((err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(data);
+    }
+  });
+});
+
 module.exports = router;
