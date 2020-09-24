@@ -68,7 +68,6 @@ router.post("/login", async (req, res) => {
         id: user._id,
         displayName: user.displayName,
         avatar: user.avatar,
-        mens: user.mensaje,
       },
     });
   } catch (err) {
@@ -107,6 +106,7 @@ router.get("/", auth, async (req, res) => {
   res.json({
     displayName: user.displayName,
     id: user._id,
+    avatar: user.avatar,
   });
 });
 
