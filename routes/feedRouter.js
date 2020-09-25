@@ -3,7 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const auth = require("../middleware/auth");
-const User = require("../models/feedModel");
+const Feed = require("../models/feedModel");
+const File = require("../models/fileModel");
 
 const storage = multer.diskStorage({
   destination: "./public/",
@@ -15,19 +16,24 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: { fileSize: 1000000 },
-}).single("myfile");
+}).single("file");
 
 router.post("/upload", async (req, res) => {
   try {
     let { user_id, file, title, displayName } = req.body;
-
-    if (req.file != undefined) {
-      const file = new File();
-      file.meta_data = req.file;
-      file.save().then(() => {
-        res.send({ message: "uploaded successfully" });
+    if (file != undefined) {
+      upload((req, res) => {
+        const fileSaved = new File();
+        fileSaved.meta_data = req.file;
+        fileSaved.save().then(() => {
+          res.send({ message: "uploaded successfully" });
+        });
+        file = fileSaved;
+        console.log(fileSaved);
       });
     }
+
+    console.log(user_id);
     const newFeed = new Feed({
       user_id,
       displayName,
