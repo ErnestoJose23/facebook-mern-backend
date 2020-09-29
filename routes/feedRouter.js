@@ -28,12 +28,13 @@ router.post("/uploadImg", upload.single("file"), async (req, res) => {
 router.post("/upload", async (req, res) => {
   try {
     console.log(req.body);
-    let { user_id, title, displayName, imagename } = req.body;
+    let { user_id, title, displayName, imagename, timestamp } = req.body;
     const newFeed = new Feed({
       user_id,
       displayName,
       imagename,
       title,
+      timestamp,
     });
 
     const savedFeed = await newFeed.save();
@@ -44,13 +45,14 @@ router.post("/upload", async (req, res) => {
 });
 
 router.get("/sync", (req, res) => {
+  const sort = { _id: -1 };
   Feed.find((err, data) => {
     if (err) {
       res.status(500).send(err);
     } else {
       res.status(200).send(data);
     }
-  });
+  }).sort(sort);
 });
 
 module.exports = router;

@@ -5,6 +5,7 @@ const feedSchema = new mongoose.Schema({
   displayName: { type: String },
   title: { type: String },
   imagename: { type: String },
+  timestamp: { type: String },
 });
 
 module.exports = Feed = mongoose.model("feed", feedSchema);

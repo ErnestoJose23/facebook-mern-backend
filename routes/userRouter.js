@@ -120,4 +120,17 @@ router.get(`/sync`, (req, res) => {
   });
 });
 
+router.get(`/getUser/:userid`, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userid);
+    if (!user) {
+      return res.status(400).json({ msg: "No user found." });
+    } else {
+      res.status(200).send(user);
+    }
+  } catch {
+    return res.status(400).json({ msg: "No user found." });
+  }
+});
+
 module.exports = router;
