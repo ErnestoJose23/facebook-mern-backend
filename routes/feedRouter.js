@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     cb(null, "uploads");
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
+    cb(null, req.headers.path + path.extname(file.originalname));
   },
 });
 
@@ -21,21 +21,13 @@ const upload = multer({
   limits: { fileSize: 1000000 },
 });
 
-router.post("/uploadImg", async (req, res) => {
-  const imagen = req.body.imagename;
-  multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "uploads");
-    },
-    filename: function (req, file, cb) {
-      cb(null, imagen + path.extname(file.originalname));
-    },
-  });
+router.post("/uploadImg", upload.single("file"), async (req, res) => {
   console.log(req.body);
 });
 
 router.post("/upload", async (req, res) => {
   try {
+    console.log(req.body);
     let { user_id, title, displayName, imagename } = req.body;
     const newFeed = new Feed({
       user_id,
@@ -43,9 +35,9 @@ router.post("/upload", async (req, res) => {
       imagename,
       title,
     });
-    console.log(newFeed);
-    //const savedFeed = await newFeed.save();
-    //res.json(savedFeed);
+
+    const savedFeed = await newFeed.save();
+    res.json(savedFeed);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
