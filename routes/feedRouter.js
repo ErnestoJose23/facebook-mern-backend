@@ -6,6 +6,7 @@ const auth = require("../middleware/auth");
 const path = require("path");
 const Feed = require("../models/feedModel");
 const File = require("../models/fileModel");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -21,8 +22,19 @@ const upload = multer({
   limits: { fileSize: 1000000 },
 });
 
-router.post("/uploadImg", upload.single("file"), async (req, res) => {
-  console.log(req.body);
+router.post("/uploadImg", upload.single("file"), (req, res) => {
+  var img = fs.readFileSync(req.file.path);
+  var encode_image = img.toString("base64");
+  var finalImg = new File({
+    contentType: req.file.mimetype,
+    path: req.file.path,
+    image: Buffer.from(encode_image, "base64"),
+    imagename: req.headers.path,
+  });
+
+  const savedFile = finalImg.save();
+
+  console.log(savedFile.image);
 });
 
 router.post("/upload", async (req, res) => {
@@ -53,6 +65,19 @@ router.get("/sync", (req, res) => {
       res.status(200).send(data);
     }
   }).sort(sort);
+});
+
+router.get(`/getImg/:imagename`, async (req, res) => {
+  try {
+    const img = await File.findOne({ imagename: req.params.imagename });
+    if (!img) {
+      return res.status(400).json({ msg: "No user found." });
+    } else {
+      res.status(200).send(img);
+    }
+  } catch {
+    return res.status(400).json({ msg: "No user found." });
+  }
 });
 
 module.exports = router;

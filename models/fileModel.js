@@ -1,7 +1,10 @@
 var mongoose = require("mongoose");
 
 const fileSchema = new mongoose.Schema({
-  meta_data: {},
+  contentType: {},
+  path: String,
+  image: {},
+  imagename: String,
 });
 
 module.exports = File = mongoose.model("file", fileSchema);
