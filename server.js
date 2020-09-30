@@ -32,3 +32,4 @@ mongoose.connect(
 
 app.use("/users", require("./routes/userRouter"));
 app.use("/feed", require("./routes/feedRouter"));
+app.use("/comment", require("./routes/commentRouter"));
