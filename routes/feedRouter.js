@@ -61,7 +61,22 @@ router.get("/sync", (req, res) => {
     } else {
       res.status(200).send(data);
     }
-  }).sort(sort);
+  })
+    .sort(sort)
+    .populate("comments");
+});
+
+router.get("/sync/:postId", (req, res) => {
+  Feed.findById(req.params.postId)
+    .populate("comments")
+    .exec(function (err, user) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.status(200).json(user);
+        console.log("success");
+      }
+    });
 });
 
 router.get(`/getImg/:imagename`, async (req, res) => {

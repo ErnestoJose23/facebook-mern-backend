@@ -1,21 +1,29 @@
 const router = require("express").Router();
 const Comment = require("../models/commentModel");
+const Feed = require("../models/feedModel");
 
 router.post("/uploadComment", async (req, res) => {
   try {
     console.log(req.body);
-    let { user_id_comment, post_id, displayName, newComment } = req.body;
+    let { user_id_comment, displayName, post_id, newComment } = req.body;
     const user_id = user_id_comment;
-    const feed_id = post_id;
     const comment = newComment;
     const newCommentM = new Comment({
       user_id,
-      feed_id,
       displayName,
       comment,
     });
     console.log(newCommentM);
-    const savedComment = await newCommentM.save();
+    const savedComment = await newCommentM.save().then((docComment) => {
+      console.log("\n>> Created Comment:\n", docComment);
+
+      return Feed.findByIdAndUpdate(
+        post_id,
+        { $push: { comments: docComment._id } },
+        { new: true, useFindAndModify: false }
+      );
+    });
+
     res.json(savedComment);
   } catch (err) {
     res.status(500).json({ error: err.message });

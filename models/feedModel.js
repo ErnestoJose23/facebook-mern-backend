@@ -6,6 +6,12 @@ const feedSchema = new mongoose.Schema({
   title: { type: String },
   imagename: { type: String },
   timestamp: { type: String },
+  comments: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "comment",
+    },
+  ],
 });
 
 module.exports = Feed = mongoose.model("feed", feedSchema);
