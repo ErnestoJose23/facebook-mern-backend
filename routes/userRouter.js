@@ -133,4 +133,22 @@ router.get(`/getUser/:userid`, async (req, res) => {
   }
 });
 
+router.get(`/getUserName/:name`, async (req, res) => {
+  try {
+    const user = await User.find({
+      displayName: { $regex: req.params.name, $options: "i" },
+    });
+
+    if (!user) {
+      return res.status(400).json({ msg: "No user found." });
+    } else {
+      res.status(200).send(user);
+    }
+  } catch {
+    return res
+      .status(400)
+      .json({ msg: "No user found.", name: req.params.name });
+  }
+});
+
 module.exports = router;
