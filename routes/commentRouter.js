@@ -5,8 +5,8 @@ const Feed = require("../models/feedModel");
 router.post("/uploadComment", async (req, res) => {
   try {
     console.log(req.body);
-    let { user_id, displayName, post_id, newComment } = req.body;
-    const comment = newComment;
+    let { user_id, displayName, post_id, comment } = req.body;
+
     const newCommentM = new Comment({
       user_id,
       displayName,
