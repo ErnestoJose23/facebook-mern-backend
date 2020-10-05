@@ -4,11 +4,13 @@ const FriendRequest = require("../models/friendrequestModel");
 router.post("/sendrequest", async (req, res) => {
   try {
     console.log(req.body);
-    let { sender_id, receiver_id } = req.body;
+    let { sender_id, receiver_id, senderName, senderAvatar } = req.body;
     const state = "Pending";
     const newFriendRequest = new FriendRequest({
       sender_id,
       receiver_id,
+      senderName,
+      senderAvatar,
       state,
     });
 
@@ -27,6 +29,25 @@ router.get(`/sync`, (req, res) => {
       res.status(200).send(data);
     }
   });
+});
+
+router.get(`/sync/:user/:state`, async (req, res) => {
+  try {
+    const fr = await FriendRequest.find({
+      receiver_id: { $regex: req.params.user, $options: "i" },
+      state: { $regex: req.params.state, $options: "i" },
+    });
+
+    if (!fr) {
+      return res.status(400).json({ msg: "No user found." });
+    } else {
+      res.status(200).send(fr);
+    }
+  } catch {
+    return res
+      .status(400)
+      .json({ msg: "No user found.", name: req.params.name });
+  }
 });
 
 router.get(`/sync/:user1/:user2`, async (req, res) => {
