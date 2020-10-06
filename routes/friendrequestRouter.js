@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const FriendRequest = require("../models/friendrequestModel");
+const User = require("../models/userModel");
 
 router.post("/sendrequest", async (req, res) => {
   try {
@@ -16,6 +17,39 @@ router.post("/sendrequest", async (req, res) => {
 
     const savedFeed = await newFriendRequest.save();
     res.json(savedFeed);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/acceptRequest", async (req, res) => {
+  try {
+    console.log(req.body);
+
+    FriendRequest.findByIdAndUpdate(
+      { _id: FriendRequest_id },
+      { state: "Confirmed" },
+
+      function (err, result) {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send(result);
+        }
+      }
+    );
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post("/addFriend/:user_1/:user_2", async (req, res) => {
+  try {
+    return User.findByIdAndUpdate(
+      req.params.user_1,
+      { $push: { users: req.params.user_2 } },
+      { new: true, useFindAndModify: false }
+    );
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -55,10 +89,12 @@ router.get(`/sync/:user1/:user2`, async (req, res) => {
     const frsender = await FriendRequest.find({
       sender_id: { $regex: req.params.user1, $options: "i" },
       receiver_id: { $regex: req.params.user2, $options: "i" },
+      state: { $regex: "Pending", $options: "i" },
     });
     const frreceiver = await FriendRequest.find({
       sender_id: { $regex: req.params.user2, $options: "i" },
       receiver_id: { $regex: req.params.user1, $options: "i" },
+      state: { $regex: "Pending", $options: "i" },
     });
 
     if (!frsender) {

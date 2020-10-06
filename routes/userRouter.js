@@ -151,4 +151,21 @@ router.get(`/getUserName/:name`, async (req, res) => {
   }
 });
 
+router.get("/getFriends/:user_id", async (req, res) => {
+  try {
+    User.findById(req.params.user_id)
+      .populate("friends")
+      .exec(function (err, user) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.status(200).json(user);
+          console.log("success");
+        }
+      });
+  } catch {
+    return res.status(400).json({ msg: "Could find friends" });
+  }
+});
+
 module.exports = router;
